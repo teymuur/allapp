@@ -68,21 +68,7 @@ $messages_result = $conn->query($messages_query);
             <button type="submit" name="send">Send</button>
         </form>
         
-        <h2>Message Log</h2>
-        <?php if ($messages_result->num_rows > 0): ?>
-            <ul>
-                <?php while($row = $messages_result->fetch_assoc()): ?>
-                    <li>
-                        <strong><?php echo $row['sender_username']; ?>:</strong>
-                        <?php echo $row['message']; ?>
-                        <br>
-                        <small><?php echo $row['timestamp']; ?></small>
-                    </li>
-                <?php endwhile; ?>
-            </ul>
-        <?php elseif(isset($receiver_username)): ?>
-            <p>No messages with <?php echo htmlspecialchars($receiver_username); ?>.</p>
-        <?php endif; ?>
+        
         <a href="inbox.php">Go to Inbox</a>
     </div>
 </body>
