@@ -11,7 +11,7 @@
     <div class="dropdown">
   <a class="dropbtn"><?php echo $_SESSION['username']?></a>
   <div class="dropdown-content">
-    <a href="profile.php?username=<?php echo $_SESSION['username']?>">Profile</a>
+    <a href="profile.php?u=<?php echo $_SESSION['username']?>">Profile</a>
     <a href="inbox.php">Inbox</a>
     <a href="logout.php">Logout</a>
   </div>

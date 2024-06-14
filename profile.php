@@ -1,8 +1,8 @@
 <?php
 session_start();
 $conn = new mysqli('localhost', 'root', '', 'allapp');
-$_username = $_GET['username'];
- if(!$_GET['username']){
+$_username = $_GET['u'];
+ if(!$_GET['u']){
     $_username= $_SESSION['username'];
  }
 if ($conn->connect_error) {
@@ -14,13 +14,16 @@ if (!isset($_SESSION['username'])) {
 }
 $username = $_SESSION['username'];
 $user_id_query = "SELECT id FROM users WHERE username='$username'";
-if($username != $_username){
-    echo 1;
-    echo "<style>#log: {display: None}</style>";
-}
+$myprofile = $username == $_username;
+
 $user_id_result = $conn->query($user_id_query);
 $user_id = $user_id_result->fetch_assoc()['id'];
 
+$user_exists_query = "SELECT id FROM users WHERE username='$_username'";
+$user_exists_result = $conn->query($user_exists_query);
+if ($user_exists_result->num_rows <= 0) {
+    echo "<div class='error'>User doesnt exist.</div";
+} 
 $messages_query = "SELECT m.message, u.username AS receiver_username, m.timestamp 
                    FROM messages m 
                    JOIN users u ON receiver_id = u.id 
@@ -41,11 +44,12 @@ $messages_result = $conn->query($messages_query);
 <?php include 'nav.php';?>
 <body>
     <div class="container">
-
-    
+    <h3>@<?php echo $_username?></h>
+    <h4>Email:  </h4>
     </div>
 
 <div class="log">
+<?php if ($myprofile): ?>
 <h2 >Message Log</h2>
         <?php if ($messages_result->num_rows > 0): ?>
             <ul>
@@ -61,6 +65,8 @@ $messages_result = $conn->query($messages_query);
         <?php elseif(isset($receiver_username)): ?>
             <p>No messages with <?php echo htmlspecialchars($receiver_username); ?>.</p>
         <?php endif; ?>
+
+        <?php endif;?>
 </div>
 </body>
 </html>
