@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['username'])) {
+if (!isset($_COOKIE['username'])) {
     header("Location: login.php");
     exit();
 }
@@ -20,7 +20,7 @@ if (!isset($_SESSION['username'])) {
 <body>
     <?php include "nav.php"?>
     <div class="container">
-        <h2><?php echo "Welcome, " . $_SESSION['username'] . "!";?></h2>
+        <h2><?php echo "Welcome, " . $_COOKIE['username'] . "!";?></h2>
         <p>You have successfully logged in!</p>
      
         <a href="chat.php"><button>Chat</button></a>

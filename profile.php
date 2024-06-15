@@ -1,18 +1,21 @@
 <?php
 session_start();
+
 $conn = new mysqli('localhost', 'root', '', 'allapp');
-$_username = $_GET['u'];
- if(!$_GET['u']){
-    $_username= $_SESSION['username'];
+
+ if(!isset($_GET['u'])){
+    $_username= $_COOKIE['username'];
+ }else{
+    $_username = $_GET['u'];
  }
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-if (!isset($_SESSION['username'])) {
+if (!isset($_COOKIE['username'])) {
     header("Location: login.php");
     exit();
 }
-$username = $_SESSION['username'];
+$username = $_COOKIE['username'];
 $user_id_query = "SELECT id FROM users WHERE username='$username'";
 $myprofile = $username == $_username;
 
@@ -43,7 +46,7 @@ $messages_result = $conn->query($messages_query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles.css">
-    <title>Profile: <?php echo $_SESSION['username']?></title>
+    <title>Profile: <?php echo $_COOKIE['username']?></title>
 </head>
 <?php include 'nav.php';?>
 <body>
@@ -53,7 +56,7 @@ $messages_result = $conn->query($messages_query);
     <h4>Email:  <?php echo $email ?></h4>
     <?php if($myprofile) :?>
         <h3>Update Profile</h3>
-        <form action="updateprofile.inc.php">
+        <form method="post" action="updateprofile.inc.php">
         Udate Profile Picture: <input type="file" name="profile_picture" alt="">
         Update Birthday <input type="date" name="birthdate" id="">
         Update Gender  <select name="gender" id="gender">
@@ -68,7 +71,7 @@ $messages_result = $conn->query($messages_query);
         </form>
     <?php else:?>
         Gender: <?php echo $row['gender'];?><br>
-        Birthday: <?php if(isset($row['birtday'])){echo $row['birthday'];} else{echo "not defined";}; ?>
+        Birthday: <?php if(isset($row['birthdate'])){echo $row['birthdate'];} else{echo "not defined";}; ?>
         
     <?php endif;?>
     </div>
@@ -93,5 +96,17 @@ $messages_result = $conn->query($messages_query);
 
         <?php endif;?>
 </div>
+
+<script>
+var temp = <?php echo $row['gender'];?>;
+var mySelect = document.getElementById('gender');
+
+for(var i, j = 0; i = mySelect.options[j]; j++) {
+    if(i.value == temp) {
+        mySelect.selectedIndex = j;
+        break;
+    }
+}
+</script>
 </body>
 </html>

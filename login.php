@@ -1,14 +1,15 @@
 <?php
 session_start();
+
 $conn = new mysqli('localhost', 'root', '', 'allapp');
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['login'])) {
-    $username = $conn->real_escape_string($_GET['username']);
-    $password = $_GET['password'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
+    $username = $conn->real_escape_string($_POST['username']);
+    $password = $_POST['password'];
 
     $sql = "SELECT * FROM users WHERE username='$username'";
     $result = $conn->query($sql);
@@ -16,7 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['login'])) {
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
         if (password_verify($password, $user['password'])) {
-            $_SESSION['username'] = $user['username'];
+            setcookie('username', $user['username'], time() + (86400 * 30), '/');
+            setcookie('password', $user['password'], time() + (86400 * 30), '/');
             header("Location: index.php");
             exit;
         } else {
@@ -44,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['login'])) {
             <input type="text" name="username" required><br>
             <label for="password">Password:</label>
             <input type="password" name="password" required><br>
-            <button type="submit" name="login">Login</button>
+            <input type="submit" value="Login" name="login">
         </form>
         <p>Don't have an account? <a href="register.php">Register here</a></p>
     </div>

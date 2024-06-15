@@ -6,19 +6,19 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if (!isset($_SESSION['username'])) {
+if (!isset($_COOKIE['username'])) {
     header("Location: login.php");
     exit();
 }
 
-$username = $_SESSION['username'];
+$username = $_COOKIE['username'];
 $sender_id_query = "SELECT id FROM users WHERE username='$username'";
 $sender_id_result = $conn->query($sender_id_query);
 $sender_id = $sender_id_result->fetch_assoc()['id'];
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['send'])) {
-    $receiver_username = $conn->real_escape_string($_GET['receiver_username']);
-    $message = $conn->real_escape_string($_GET['message']);
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['send'])) {
+    $receiver_username = $conn->real_escape_string($_POST['receiver_username']);
+    $message = $conn->real_escape_string($_POST['message']);
 
     $receiver_id_query = "SELECT id FROM users WHERE username='$receiver_username'";
     $receiver_id_result = $conn->query($receiver_id_query);

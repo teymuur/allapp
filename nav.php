@@ -10,9 +10,9 @@
     <div class="navbar-right">
         
     <div class="dropdown">
-  <a class="dropbtn"><?php echo $_SESSION['username']?></a>
+  <a class="dropbtn"><?php echo $_COOKIE['username']?></a>
   <div class="dropdown-content">
-    <a href="profile.php?u=<?php echo $_SESSION['username']?>">Profile</a>
+    <a href="profile.php?u=<?php echo $_COOKIE['username']?>">Profile</a>
     <a href="inbox.php">Inbox</a>
     <a href="logout.inc.php">Logout</a>
   </div>

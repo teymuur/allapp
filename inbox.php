@@ -6,12 +6,12 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if (!isset($_SESSION['username'])) {
+if (!isset($_COOKIE['username'])) {
     header("Location: login.php");
     exit();
 }
 
-$username = $_SESSION['username'];
+$username = $_COOKIE['username'];
 $user_id_query = "SELECT id FROM users WHERE username='$username'";
 $user_id_result = $conn->query($user_id_query);
 $user_id = $user_id_result->fetch_assoc()['id'];
