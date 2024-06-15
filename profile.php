@@ -54,8 +54,8 @@ $messages_result = $conn->query($messages_query);
     <?php if($myprofile) :?>
         <h3>Update Profile</h3>
         <form action="updateprofile.inc.php">
-        Udate Profile Picture: <input type="file"  alt="">
-        Update Birthday <input type="date" name="" id="">
+        Udate Profile Picture: <input type="file" name="profile_picture" alt="">
+        Update Birthday <input type="date" name="birthdate" id="">
         Update Gender  <select name="gender" id="gender">
         <option value="Prefer not to say">Prefer not to say</option>
         <option value="Male">Male</option>
@@ -64,7 +64,7 @@ $messages_result = $conn->query($messages_query);
         <option value="Other">Other</option>
 
     </select>
-        <input type="submit" value="Update">
+        <input type="submit" name="update" value="Update">
         </form>
     <?php else:?>
         Gender: <?php echo $row['gender'];?><br>
