@@ -32,8 +32,7 @@ label {
     margin-bottom: 5px;
 }
 
-input[type="text"],
-input[type="password"],
+input,
 textarea {
     padding: 10px;
     margin-bottom: 10px;
@@ -92,4 +91,32 @@ small {
 img{
     width: 100%;
     height:100%;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px;
+}
+
+input[type="file"], input[type="date"], select {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+}
+
+input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+input[type="submit"]:hover {
+    background-color: #0056b3;
 }

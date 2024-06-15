@@ -1,6 +1,7 @@
 
 <head>
-    <link rel="stylesheet" href="css/nav_styles.css">
+    <link rel="stylesheet" href="./css/nav_styles.css">
+
 </head>
 <nav class="navbar">
     <div class="navbar-left">

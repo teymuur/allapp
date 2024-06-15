@@ -25,7 +25,7 @@ if (!isset($_SESSION['username'])) {
      
         <a href="chat.php"><button>Chat</button></a>
         <a href="inbox.php"><button>Inbox</button></a>
-        <a href="logou.inc.php"><button>Logout</button></a>
+        <a href="logout.inc.php"><button>Logout</button></a>
 
     </div>
 </body>

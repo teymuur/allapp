@@ -48,7 +48,7 @@ $messages_result = $conn->query($messages_query);
 <?php include 'nav.php';?>
 <body>
     <div class="container">
-    <img src="images/<?php echo $pfp ?>" alt="profile" >
+    <img src="<?php echo $pfp ?>" alt="profile" >
     <h2>@<?php echo $_username?></h2>
     <h4>Email:  <?php echo $email ?></h4>
     <?php if($myprofile) :?>
@@ -64,7 +64,7 @@ $messages_result = $conn->query($messages_query);
         <option value="Other">Other</option>
 
     </select>
-        <input type="submit" name="update" value="Update">
+    <input type="submit" >
         </form>
     <?php else:?>
         Gender: <?php echo $row['gender'];?><br>

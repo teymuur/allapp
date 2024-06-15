@@ -6,9 +6,9 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
-    $username = $conn->real_escape_string($_POST['username']);
-    $password = $_POST['password'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['login'])) {
+    $username = $conn->real_escape_string($_GET['username']);
+    $password = $_GET['password'];
 
     $sql = "SELECT * FROM users WHERE username='$username'";
     $result = $conn->query($sql);
