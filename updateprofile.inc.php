@@ -6,13 +6,13 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-    $gender = $_POST['gender'];
-    $birthdate = $_POST['birthdate'];
+    $gender = $_GET['gender'];
+    $birthdate = $_GET['birthdate'];
 
     // Assuming $username is the logged-in user's username
     $username = $_COOKIE['username'];
 
-    if (isset($_POST['birthdate']) && $_POST['birthdate'] != '0000-00-00') {
+    if (isset($_GET['birthdate']) && $_GET['birthdate'] != '0000-00-00') {
         $query = "UPDATE users SET birthdate = ? WHERE username = ?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("ss", $birthdate, $username);
@@ -31,7 +31,7 @@ if ($conn->connect_error) {
         }
     }
 
-    if (isset($_POST['gender'])) {
+    if (isset($_GET['gender'])) {
         $query = "UPDATE users SET gender = ? WHERE username = ?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("ss", $gender, $username);

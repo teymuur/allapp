@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_COOKIE['username'])) {
+if (!isset($_COOKIE['username']) or !isset($_COOKIE['password'])) {
     header("Location: login.php");
     exit();
 }
