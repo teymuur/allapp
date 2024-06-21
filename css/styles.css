@@ -16,6 +16,7 @@ a{
     background: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
+
 }
 
 h2 {
@@ -45,7 +46,7 @@ textarea {
 }
 
 button {
-    padding: 10px;
+    
     background: #007bff;
     color: #fff;
     border: none;
@@ -97,6 +98,7 @@ form {
     flex-direction: column;
     width: 100%;
     max-width: 400px;
+    margin: 0 auto;
 }
 
 input[type="file"], input[type="date"], select {
@@ -120,3 +122,4 @@ input[type="submit"] {
 input[type="submit"]:hover {
     background-color: #0056b3;
 }
+
