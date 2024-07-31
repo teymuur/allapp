@@ -20,7 +20,7 @@ h2 {
     text-align: center;
 }
 
-form {
+form .a{
     display: flex;
     flex-direction: column;
 }
@@ -67,4 +67,43 @@ input[type="submit"]:hover, button:hover {
 .error {
     color: red;
     margin-bottom: 10px;
+}
+.message-date {
+    text-align: center;
+    margin: 20px 0;
+    font-weight: bold;
+    color: #888;
+}
+
+.message-group {
+    margin-bottom: 20px;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+}
+
+.username {
+    font-weight: bold;
+    color: #333;
+}
+
+.message-text {
+    display: block;
+    margin-top: 5px;
+}
+
+.timestamp {
+    display: block;
+    font-size: 0.8em;
+    color: #888;
+    margin-top: 5px;
+    float: right;
+}
+a{
+    color: #5c85d6;
+    text-decoration: none;
 }

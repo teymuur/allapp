@@ -45,6 +45,16 @@ require_once 'db_connection.php';
             loadMessages();
             setInterval(loadMessages, 5000);
         });
+        function doc_keyUp(e) {
+
+            // this would test for whichever key is 40 (down arrow) and the ctrl key at the same time
+            if (e.code === 'Enter') {
+                // call your function to do the thing
+                sendMessage();
+            }
+        }
+// register the handler 
+document.addEventListener('keyup', doc_keyUp, false);
     </script>
 </head>
 <div class="container">
