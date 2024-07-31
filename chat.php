@@ -11,6 +11,8 @@ require_once 'db_connection.php';
 <html>
 <head>
     <title>Chat</title>
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function sendMessage() {
@@ -45,10 +47,10 @@ require_once 'db_connection.php';
         });
     </script>
 </head>
-<body>
-    <h2>Welcome, <?php echo $_SESSION['username']; ?></h2>
-    <div id="chat-messages"></div>
-    <select id="receiver">
+<div class="container">
+        <h2>Welcome, <?php echo $_SESSION['username']; ?></h2>
+        <div id="chat-messages"></div>
+        <select id="receiver">
         <?php
         $stmt = $conn->prepare("SELECT id, username FROM users WHERE id != ?");
         $stmt->bind_param("i", $_SESSION['user_id']);
@@ -58,8 +60,9 @@ require_once 'db_connection.php';
             echo "<option value='" . $row['id'] . "'>" . $row['username'] . "</option>";
         }
         ?>
-    </select>
-    <input type="text" id="message" placeholder="Type your message">
-    <button onclick="sendMessage()">Send</button>
+</select>
+        <input type="text" id="message" placeholder="Type your message">
+        <button onclick="sendMessage()">Send</button>
+    </div>
 </body>
 </html>
