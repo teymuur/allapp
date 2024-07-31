@@ -1,59 +1,42 @@
 <?php
 session_start();
+require_once 'db_connection.php';
 
-$conn = new mysqli('localhost', 'root', '', 'allapp');
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-
-if (isset($_GET['login'])) {
-    $username = $conn->real_escape_string($_GET['username']);
-    $password = $_GET['password'];
-
-    $sql = "SELECT * FROM users WHERE username='$username'";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
+    if ($user = $result->fetch_assoc()) {
         if (password_verify($password, $user['password'])) {
-            setcookie('username', $user['username'], time() + (86400 * 30), '/');
-            setcookie('password', $user['password'], time() + (86400 * 30), '/');
-            header("Location: index.php");
-            exit;
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            header("Location: chat.php");
         } else {
-            echo "<div class='error'>Invalid password.</div>";
+            $error = "Invalid username or password.";
         }
     } else {
-        echo "<div class='error'>No user found.</div>";
+        $error = "Invalid username or password.";
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Login</h2>
-        <form method="post" action="">
-            <label for="username">Username:</label>
-            <input type="text" name="username" required><br>
-            <label for="password">Password:</label>
-            <input type="password" name="password" required><br>
-            <input type="submit" value="Login" name="login">
-        </form>
-        <p>Don't have an account? <a href="register.php">Register here</a></p>
-    </div>
+    <h2>Login</h2>
+    <?php if (isset($error)) echo "<p>$error</p>"; ?>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <input type="submit" value="Login">
+    </form>
 </body>
 </html>
-
-<?php
-$conn->close();
-?>

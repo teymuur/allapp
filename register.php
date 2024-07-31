@@ -1,64 +1,36 @@
 <?php
 session_start();
-$conn = new mysqli('localhost', 'root', '', 'allapp');
+require_once 'db_connection.php';
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = $_POST['username'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+    $stmt->bind_param("ss", $username, $password);
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['register'])) {
-    $username = $conn->real_escape_string($_GET['username']);
-    $email = $conn->real_escape_string($_GET['email']);
-    $password = password_hash($_GET['password'], PASSWORD_BCRYPT);
-
-    $sql_username = "SELECT * FROM users WHERE username = '$username'";
-    $sql_email = "SELECT * FROM users WHERE email = '$email'";
-
-    $result_username = $conn->query($sql_username);
-    $result_email = $conn->query($sql_email);
-
-    if ($result_username->num_rows > 0 || $result_email->num_rows > 0) {
-        echo "<div class='error'>Username or email already exists.</div>";
+    if ($stmt->execute()) {
+        $_SESSION['user_id'] = $stmt->insert_id;
+        $_SESSION['username'] = $username;
+        header("Location: chat.php");
     } else {
-        $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password')";
-    
-        if ($conn->query($sql) === TRUE) {
-            $_COOKIE['username'] = $username;
-            header("Location: index.php");
-            exit;
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
+        $error = "Registration failed. Please try again.";
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Register</h2>
-        <form method="post" action="">
-            <label for="username">Username:</label>
-            <input type="text" name="username" required><br>
-            <label for="email">Email:</label>
-            <input type="email" name="email" required><br>
-            <label for="password">Password:</label>
-            <input type="password" name="password" required><br>
-            <button type="submit" name="register">Register</button>
-        </form>
-        <p>Already have an account? <a href="login.php">Login here</a></p>
-    </div>
+    <h2>Register</h2>
+    <?php if (isset($error)) echo "<p>$error</p>"; ?>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <input type="submit" value="Register">
+    </form>
 </body>
 </html>
-
-<?php
-$conn->close();
-?>
