@@ -40,7 +40,7 @@ if (isset($_SESSION['user_id']) && isset($_GET['receiver_id'])) {
             echo "<div class='message-group'>";
         }
         echo "<div class='message'>";
-        echo "<span class='username'><a href='profile.php?" . htmlspecialchars($row['username']) ."'>". htmlspecialchars($row['username']) . " </a>". ":</span> ";
+        echo "<span class='username'><a href='profile.php?p=" . htmlspecialchars($row['username']) ."'>". htmlspecialchars($row['username']) . " </a>". ":</span> ";
         echo "<span class='message-text'>" . htmlspecialchars($row['message']) . "</span>";
         echo "<span class='timestamp'>" . formatDate($row['sent_at']) . "</span>";
         echo "</div>";

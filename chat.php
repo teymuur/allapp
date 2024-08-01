@@ -59,6 +59,7 @@ document.addEventListener('keyup', doc_keyUp, false);
 </head>
 <div class="container">
         <h2>Welcome, <?php echo $_SESSION['username']; ?></h2>
+        <a href="logout.php">Logout</a>
         <div id="chat-messages"></div>
         <select id="receiver">
         <?php
