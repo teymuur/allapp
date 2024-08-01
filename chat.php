@@ -1,79 +1,79 @@
 <?php
 session_start();
-$conn = new mysqli('localhost', 'root', '', 'allapp');
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-if (!isset($_COOKIE['username'])) {
+if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-
-$username = $_COOKIE['username'];
-$sender_id_query = "SELECT id FROM users WHERE username='$username'";
-$sender_id_result = $conn->query($sender_id_query);
-$sender_id = $sender_id_result->fetch_assoc()['id'];
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['send'])) {
-    $receiver_username = $conn->real_escape_string($_GET['receiver_username']);
-    $message = $conn->real_escape_string($_GET['message']);
-
-    $receiver_id_query = "SELECT id FROM users WHERE username='$receiver_username'";
-    $receiver_id_result = $conn->query($receiver_id_query);
-
-    if ($receiver_id_result->num_rows > 0) {
-        $receiver_id = $receiver_id_result->fetch_assoc()['id'];
-
-        $sql = "INSERT INTO messages (sender_id, receiver_id, message) VALUES ('$sender_id', '$receiver_id', '$message')";
-        
-        if ($conn->query($sql) === TRUE) {
-            echo "Message sent!";
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
-    } else {
-        echo "No user found with that username.";
-    }
-}
-
-$messages_query = "SELECT m.message, u.username AS sender_username, m.timestamp 
-                   FROM messages m 
-                   JOIN users u ON m.sender_id = u.id 
-                   WHERE (m.sender_id = '$sender_id') 
-                     
-                   ORDER BY m.timestamp DESC";
-$messages_result = $conn->query($messages_query);
+require_once 'db_connection.php';
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function sendMessage() {
+            var message = $("#message").val();
+            var receiver_id = $("#receiver").val();
+            $.ajax({
+                url: "send_message.php",
+                method: "POST",
+                data: { message: message, receiver_id: receiver_id },
+                success: function(data) {
+                    $("#message").val("");
+                    loadMessages();
+                }
+            });
+        }
+
+        function loadMessages() {
+            var receiver_id = $("#receiver").val();
+            $.ajax({
+                url: "get_messages.php",
+                method: "GET",
+                data: { receiver_id: receiver_id },
+                success: function(data) {
+                    $("#chat-messages").html(data);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            loadMessages();
+            setInterval(loadMessages, 5000);
+        });
+        function doc_keyUp(e) {
+
+            // this would test for whichever key is 40 (down arrow) and the ctrl key at the same time
+            if (e.code === 'Enter') {
+                // call your function to do the thing
+                sendMessage();
+            }
+        }
+// register the handler 
+document.addEventListener('keyup', doc_keyUp, false);
+    </script>
 </head>
-<body>
-<?php include "nav.php"?>
-    <div class="container">
-         
-        <h2>Send a Message</h2>
-        <form method="post" action="">
-            <label for="receiver_username">Receiver Username:</label>
-            <input type="text" name="receiver_username" required><br>
-            <label for="message">Message:</label>
-            <textarea name="message" required></textarea><br>
-            <button type="submit" name="send">Send</button>
-        </form>
-        
-        
-        <a href="inbox.php">Go to Inbox</a>
+<div class="container">
+        <h2>Welcome, <?php echo $_SESSION['username']; ?></h2>
+        <a href="logout.php">Logout</a>
+        <div id="chat-messages"></div>
+        <select id="receiver">
+        <?php
+        $stmt = $conn->prepare("SELECT id, username FROM users WHERE id != ?");
+        $stmt->bind_param("i", $_SESSION['user_id']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            echo "<option value='" . $row['id'] . "'>" . $row['username'] . "</option>";
+        }
+        ?>
+</select>
+        <input type="text" id="message" placeholder="Type your message">
+        <button onclick="sendMessage()">Send</button>
     </div>
 </body>
 </html>
-
-<?php
-$conn->close();
-?>

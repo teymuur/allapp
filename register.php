@@ -1,64 +1,84 @@
 <?php
 session_start();
-$conn = new mysqli('localhost', 'root', '', 'allapp');
+require_once 'db_connection.php';
 
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if (isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_GET['register'])) {
-    $username = $conn->real_escape_string($_GET['username']);
-    $email = $conn->real_escape_string($_GET['email']);
-    $password = password_hash($_GET['password'], PASSWORD_BCRYPT);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
+    $email = $_POST['email'];
 
-    $sql_username = "SELECT * FROM users WHERE username = '$username'";
-    $sql_email = "SELECT * FROM users WHERE email = '$email'";
+    // Check if passwords match
+    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    $result_username = $conn->query($sql_username);
-    $result_email = $conn->query($sql_email);
+    if ($user = $result->fetch_assoc()) {
+        $error = "User already exists";
+    } 
+    elseif ($password !== $confirm_password) {
+        $error = "Passwords do not match.";
+    }
+    elseif(strlen($username)<4){
+        $error = "Username must be at least 4 characters";
+    } 
+    elseif(!preg_match("/^(?=.*[A-Z])(?=.*\d).{6,}$/",$password)){
+        $error = "Passwords must contain at least 6 character, an upper case letter, and a number";    
+    }
+    else {
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-    if ($result_username->num_rows > 0 || $result_email->num_rows > 0) {
-        echo "<div class='error'>Username or email already exists.</div>";
-    } else {
-        $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password')";
-    
-        if ($conn->query($sql) === TRUE) {
-            $_COOKIE['username'] = $username;
-            header("Location: index.php");
-            exit;
+        $stmt = $conn->prepare("INSERT INTO users (username, password, email) VALUES (?,?,?)");
+        $stmt->bind_param("sss", $username, $password_hash,$email);
+
+        if ($stmt->execute()) {
+            $_SESSION['user_id'] = $stmt->insert_id;
+            $_SESSION['username'] = $username;
+            header("Location: chat.php");
+            exit();
         } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
+            $error = "Registration failed. Please try again.";
         }
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        function validateForm() {
+            var password = document.getElementById("password").value;
+            var confirm_password = document.getElementById("confirm_password").value;
+            if (password != confirm_password) {
+                alert("Passwords do not match.");
+                return false;
+            }
+            return true;
+        }
+    </script>
 </head>
 <body>
     <div class="container">
         <h2>Register</h2>
-        <form method="post" action="">
-            <label for="username">Username:</label>
-            <input type="text" name="username" required><br>
-            <label for="email">Email:</label>
-            <input type="email" name="email" required><br>
-            <label for="password">Password:</label>
-            <input type="password" name="password" required><br>
-            <button type="submit" name="register">Register</button>
+        <?php if (isset($error)) echo "<p class='error'>$error</p>"; ?>
+        <form method="POST" onsubmit="return validateForm()">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" id="password" placeholder="Password" required>
+            <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
+            <input type="submit" value="Register">
         </form>
         <p>Already have an account? <a href="login.php">Login here</a></p>
     </div>
 </body>
 </html>
-
-<?php
-$conn->close();
-?>
