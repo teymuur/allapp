@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
+    $email = $_POST['email'];
 
     // Check if passwords match
     $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
@@ -33,8 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     else {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-        $stmt->bind_param("ss", $username, $password_hash);
+        $stmt = $conn->prepare("INSERT INTO users (username, password, email) VALUES (?,?,?)");
+        $stmt->bind_param("sss", $username, $password_hash,$email);
 
         if ($stmt->execute()) {
             $_SESSION['user_id'] = $stmt->insert_id;
